@@ -3,8 +3,8 @@
 //! [Official documentation](https://monocypher.org/manual/argon2i)
 
 use ffi;
-use std::mem;
 use libc;
+use std::mem;
 use std::os::raw;
 
 // Allocates the workarea that is used for the argon2i key derivation function.
@@ -108,8 +108,8 @@ pub fn general(
 
 #[cfg(test)]
 mod test {
-    use hex;
     use super::*;
+    use hex;
 
     #[test]
     fn argon2i() {
@@ -136,7 +136,8 @@ mod test {
                 3,
                 "key".as_bytes(),
                 "ad".as_bytes(),
-            ).unwrap(),
+            )
+            .unwrap(),
         );
         assert_eq!(
             pass,
@@ -154,7 +155,8 @@ mod test {
                 3,
                 "yek".as_bytes(),
                 "ad".as_bytes(),
-            ).unwrap(),
+            )
+            .unwrap(),
         );
         assert_ne!(
             pass,
@@ -172,7 +174,8 @@ mod test {
                 3,
                 "key".as_bytes(),
                 "da".as_bytes(),
-            ).unwrap(),
+            )
+            .unwrap(),
         );
         assert_ne!(
             pass,

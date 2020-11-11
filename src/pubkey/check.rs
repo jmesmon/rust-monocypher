@@ -13,9 +13,9 @@ pub fn check(signature: [u8; 64], public_key: [u8; 32], message: &[u8]) -> Resul
             message.as_ptr(),
             message.len(),
         ) == 0
-            {
-                return Ok(());
-            }
+        {
+            return Ok(());
+        }
         Err("Forged message detected.".to_owned())
     }
 }
@@ -27,7 +27,11 @@ impl Context {
     pub fn new(signature: [u8; 64], public_key: [u8; 32]) -> Context {
         unsafe {
             let mut ctx = mem::MaybeUninit::<ffi::crypto_check_ctx>::uninit();
-            ffi::crypto_check_init(ctx.as_mut_ptr() as *mut _ as *mut _, signature.as_ptr(), public_key.as_ptr());
+            ffi::crypto_check_init(
+                ctx.as_mut_ptr() as *mut _ as *mut _,
+                signature.as_ptr(),
+                public_key.as_ptr(),
+            );
             Context(ctx.assume_init())
         }
     }
@@ -35,7 +39,11 @@ impl Context {
     #[inline]
     pub fn update(&mut self, message: &[u8]) {
         unsafe {
-            ffi::crypto_check_update(&mut self.0 as *mut _ as *mut _, message.as_ptr(), message.len());
+            ffi::crypto_check_update(
+                &mut self.0 as *mut _ as *mut _,
+                message.as_ptr(),
+                message.len(),
+            );
         }
     }
 
@@ -53,7 +61,7 @@ impl Context {
 #[cfg(test)]
 mod test {
     use super::*;
-    use ::pubkey::sign;
+    use pubkey::sign;
 
     #[test]
     fn check() {
@@ -105,6 +113,9 @@ mod test {
         let ret = ctx.finalize();
 
         assert_eq!(ret.is_err(), true);
-        assert_eq!(ret.err().unwrap(), "Message corrupted, aborting.".to_owned());
+        assert_eq!(
+            ret.err().unwrap(),
+            "Message corrupted, aborting.".to_owned()
+        );
     }
 }

@@ -19,7 +19,6 @@ pub fn easy(data: &[u8]) -> [u8; 64] {
     general(data, b"")
 }
 
-
 /// Function to hash the input data with an additional key.
 ///
 /// # Example
@@ -64,8 +63,12 @@ impl Context {
     pub fn new(key: &[u8]) -> Context {
         unsafe {
             let mut ctx = mem::MaybeUninit::<ffi::crypto_blake2b_ctx>::uninit();
-            ffi::crypto_blake2b_general_init(ctx.as_mut_ptr() as *mut ffi::crypto_blake2b_ctx,
-                                             64, key.as_ptr(), key.len());
+            ffi::crypto_blake2b_general_init(
+                ctx.as_mut_ptr() as *mut ffi::crypto_blake2b_ctx,
+                64,
+                key.as_ptr(),
+                key.len(),
+            );
             Context(ctx.assume_init())
         }
     }
@@ -82,7 +85,7 @@ impl Context {
     #[inline]
     pub fn finalize(&mut self) -> [u8; 64] {
         unsafe {
-            let mut hash= mem::MaybeUninit::<[u8; 64]>::uninit();
+            let mut hash = mem::MaybeUninit::<[u8; 64]>::uninit();
             ffi::crypto_blake2b_final(&mut self.0, hash.as_mut_ptr() as *mut u8);
             hash.assume_init()
         }
@@ -91,8 +94,8 @@ impl Context {
 
 #[cfg(test)]
 mod test {
-    use hex;
     use super::*;
+    use hex;
 
     #[test]
     fn blake2b_incremental() {
